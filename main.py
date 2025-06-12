@@ -10,13 +10,9 @@ api_key = os.environ.get("GEMINI_API_KEY")
 
 client = genai.Client(api_key=api_key)
 
-parser = argparse.ArgumentParser(
-    description="This cli app is my awesome gemini ai agent"
-)
+parser = argparse.ArgumentParser(description="This cli app is my awesome gemini ai agent")
 parser.add_argument("message", help="The message to be processed by gemini")
-parser.add_argument(
-    "-v", "--verbose", action="store_true", help="Enable verbose output"
-)
+parser.add_argument("-v", "--verbose", action="store_true", help="Enable verbose output")
 
 args = parser.parse_args()
 message = [types.Content(role="user", parts=[types.Part(text=args.message)])]
