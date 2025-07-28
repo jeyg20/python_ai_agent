@@ -1,12 +1,13 @@
 import unittest
 
-from functions.path_util import get_file_content, get_files_info, write_file
+from functions.path_util import get_file_content, get_files_info, run_python_file, write_file
 
 
 def main():
-    print(write_file("calculator", "lorem.txt", "wait, this isn't lorem ipsum"))
-    print(write_file("calculator", "pkg/morelorem.txt", "lorem ipsum dolor sit amet"))
-    print(write_file("calculator", "/tmp/temp.txt", "this should not be allowed"))
+    print(run_python_file("calculator", "main.py"))
+    print(run_python_file("calculator", "tests.py"))
+    print(run_python_file("calculator", "../main.py"))
+    print(run_python_file("calculator", "nonexistent.py"))
 
 
 class TestGetFileInfo(unittest.TestCase):
@@ -29,6 +30,21 @@ class TestGetFileInfo(unittest.TestCase):
         actual_output = get_file_content("calculator", "../")
         expected_output = 'Error: Cannot list "../" as it is outside the permitted working directory'
         self.assertEqual(actual_output, expected_output)
+
+    def test_write_file(self):
+        actual_output = write_file("calculator", "lorem.txt", "wait, this isn't lorem ipsum")
+        expected_outut = 'Successfully wrote to "lorem.txt" (28 characters written)'
+        self.assertEqual(actual_output, expected_outut)
+
+    def test_write_file_parent_dir(self):
+        actual_output = write_file("calculator", "pkg/morelorem.txt", "lorem ipsum dolor sit amet")
+        expected_outut = 'Successfully wrote to "pkg/morelorem.txt" (26 characters written)'
+        self.assertEqual(actual_output, expected_outut)
+
+    def test_file_outside_working_dir(self):
+        actual_output = write_file("calculator", "/tmp/temp.txt", "this should not be allowed")
+        expected_outut = 'Error: Cannot write to "/tmp/temp.txt" as it is outside the permitted working directory'
+        self.assertEqual(actual_output, expected_outut)
 
 
 if __name__ == "__main__":

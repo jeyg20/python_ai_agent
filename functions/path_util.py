@@ -89,3 +89,42 @@ def write_file(working_directory: str, file_path: str, content: str) -> str:
 
     except Exception as e:
         return f"Error: {e}"
+
+
+def run_python_file(working_directory: str, file_path: str):
+    resolved_path, error = _resolve_and_validate_path(working_directory, file_path)
+
+    if error:
+        return f'Error: Cannot execute "{file_path}" as it is outside the permitted working directory'
+
+    if not os.path.isfile(resolved_path):
+        return f'Error: File "{file_path}" not found.'
+
+    if not resolved_path.endswith(".py"):
+        return f'Error: "{file_path}" is not a Python file.'
+
+    relative_file_path_for_subprocess = os.path.relpath(resolved_path, start=working_directory)
+
+    try:
+        result = subprocess.run(
+            ["python", relative_file_path_for_subprocess],
+            cwd=working_directory,
+            timeout=30,
+            capture_output=True,
+            text=True,
+            check=False,
+        )
+        if result.stdout:
+            output = f"\nSTDOUT:\n{result.stdout}"
+            if result.stderr:
+                output += f"\nSTDERR:\n{result.stderr}"
+
+            if result.returncode != 0:
+                output += f"\nProcess exited with code {result.returncode}"
+        else:
+            output = "No output produced"
+
+        return output
+
+    except Exception as e:
+        return f"Error: executing Python file: {e}"
