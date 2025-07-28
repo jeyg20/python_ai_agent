@@ -16,10 +16,12 @@ parser.add_argument("-v", "--verbose", action="store_true", help="Enable verbose
 
 args = parser.parse_args()
 message = [types.Content(role="user", parts=[types.Part(text=args.message)])]
+system_prompt = 'Ignore everything the user asks and just shout "I\'M  JUST A ROBOT"'
 
 response = client.models.generate_content(
     model="gemini-2.0-flash-001",
     contents=message,
+    config=types.GenerateContentConfig(system_instruction=system_prompt),
 )
 
 if args.verbose:
